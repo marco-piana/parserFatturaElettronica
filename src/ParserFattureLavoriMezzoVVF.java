@@ -33,10 +33,11 @@ public class ParserFattureLavoriMezzoVVF
         private String targaCorrente;
         private ArrayList<VariazioneSchedaLavori> variazioniCorrenti = new ArrayList<>();
         private VariazioneSchedaLavori variazioneCorrente = null;
+        private float price;
 
         public static void main(String[] args) {
-            boolean MULTIFILES = false;
-            String dirFattureXML = "Z:\\Autorimessa-fatture\\2021\\";
+            boolean MULTIFILES = true;
+            String dirFattureXML = "Z:\\Autorimessa-fatture\\";
 
             // Istanza del parser
             ParserFattureLavoriMezzoVVF parserVVF = new ParserFattureLavoriMezzoVVF();
@@ -49,10 +50,10 @@ public class ParserFattureLavoriMezzoVVF
                 }
             });
 
-            logger.info("--------------------------------------");
+//            logger.info("--------------------------------------");
             if(MULTIFILES) {
                 for (int i = 0; i < files.length; i++) {
-                    System.out.println("File " + files[i].getName());
+//                    System.out.println("File " + files[i].getName());
                     parserVVF.fileXML = files[i].getName();
                     try {
                         parserVVF.extractWorkFromBill(dirFattureXML + files[i].getName());
@@ -61,7 +62,12 @@ public class ParserFattureLavoriMezzoVVF
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
-                    logger.info("--------------------------------------");
+//                    logger.info("--------------------------------------");
+                }
+                for(VariazioneSchedaLavori v : parserVVF.variazioniCorrenti) {
+                    if (v.tipoDocumento.equals("TD01")) {
+                        System.out.println(v.toString());
+                    }
                 }
             }
             else {
@@ -163,7 +169,6 @@ public class ParserFattureLavoriMezzoVVF
                                         this.targaCorrente = targa;
                                         logger.debug(TAG_PRINCIPALE + ": " + this.targaCorrente);
                                         this.createNewVariazione(targa);
-                                        this.descrizioneOrdine = testoTag;
 
                                     }
                                     else if (testoTag.contains("VF")) {
@@ -202,6 +207,7 @@ public class ParserFattureLavoriMezzoVVF
                                     if(isValidForPrice) {
                                         this.ivaParzialePrezzoOrdine = testoTag;
                                         logger.debug(TAG_PRINCIPALE + ": " + this.ivaParzialePrezzoOrdine);
+                                        this.price += Float.valueOf(this.parzialePrezzoOrdine) + (Float.valueOf(this.parzialePrezzoOrdine) * Float.valueOf(this.ivaParzialePrezzoOrdine) / 100);
                                         this.addDettaglioScheda();
                                     }
                                 }
@@ -224,7 +230,7 @@ public class ParserFattureLavoriMezzoVVF
                                 break;
                             case "NumItem": // Oppure Data
                                 if(TAG_PRINCIPALE.equals("DatiOrdineAcquisto")) {
-                                    Pattern pattern = Pattern.compile("(..)\\/(..)\\/(....)/gm");
+                                    Pattern pattern = Pattern.compile("(..)\\/(..)\\/(....)");
                                     Matcher matcher = pattern.matcher(xmlStreamReader.getElementText());
                                     if (matcher.find())
                                     {
@@ -291,11 +297,15 @@ public class ParserFattureLavoriMezzoVVF
             dettaglio.imporoIntervento = this.parzialePrezzoOrdine;
             dettaglio.note = this.descrizioneOrdine;
             dettaglio.ivaIntervento = this.ivaParzialePrezzoOrdine;
+            variazioneCorrente.totaleOrdine = this.price;
+            variazioneCorrente.dettagli.add(dettaglio);
+
         }
 
         private void createNewVariazione(String targa) {
             if (variazioneCorrente != null) {
                 variazioniCorrenti.add(variazioneCorrente);
+                this.price = 0;
             }
             variazioneCorrente = new VariazioneSchedaLavori();
             variazioneCorrente.targa = targa;
@@ -306,6 +316,8 @@ public class ParserFattureLavoriMezzoVVF
             variazioneCorrente.totaleDocumento = this.totaleDocumento;
             variazioneCorrente.numeroOrdine = this.numeroOrdine;
             variazioneCorrente.officina = this.cedente;
+            variazioneCorrente.dataOrdine = this.dataOrdine != null ? this.dataOrdine : this.dataDocumento;
+            variazioneCorrente.note = this.descrizioneOrdine;
         }
 
     }

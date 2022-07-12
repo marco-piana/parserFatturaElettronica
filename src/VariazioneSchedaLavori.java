@@ -19,29 +19,35 @@ public class VariazioneSchedaLavori {
     public String numeroDocumento;
     public String totaleDocumento;
     public String numeroOrdine;
-    public String totaleOrdine;
+    public float totaleOrdine;
+    public String dataOrdine;
 
     @Override
     public String toString() {
-        return "VariazioneSchedaLavori{" +
-                "targa='" + targa + '\'' +
-                ", officina='" + officina + '\'' +
-                ", dataInizioLavori='" + dataInizioLavori + '\'' +
-                ", oraInizioLavori='" + oraInizioLavori + '\'' +
-                ", dataFineLavori='" + dataFineLavori + '\'' +
-                ", oraFineLavori='" + oraFineLavori + '\'' +
-                ", lavoroAlKm='" + lavoroAlKm + '\'' +
-                ", capitoloImpegnoCodice='" + capitoloImpegnoCodice + '\'' +
-                ", capitoloImpegnoAnno='" + capitoloImpegnoAnno + '\'' +
-                ", note='" + note + '\'' +
-                ", dettagli=" + dettagli +
-                ", nomeFile='" + nomeFile + '\'' +
-                ", tipoDocumento='" + tipoDocumento + '\'' +
-                ", dataDocumento='" + dataDocumento + '\'' +
-                ", numeroDocumento='" + numeroDocumento + '\'' +
-                ", totaleDocumento='" + totaleDocumento + '\'' +
-                ", numeroOrdine='" + numeroOrdine + '\'' +
-                ", totaleOrdine='" + totaleOrdine + '\'' +
-                '}';
+
+        return "VariazioneSchedaLavori {\n" +
+                "\ttarga='" + targa.substring(2) + '\'' +
+                ", \n\ttipoDocumento='" + tipoDocumento + '\'' +
+                ", \n\tofficina='" + officina + '\'' +
+                ", \n\tdataDocumento='" + dataDocumento + '\'' +
+                ", \n\tdataOrdine='" + dataOrdine + '\'' +
+                ", \n\tdataInizioLavori='" + dataInizioLavori + '\'' +
+                ", \n\toraInizioLavori='" + oraInizioLavori + '\'' +
+                ", \n\tnote='" + note + '\'' +
+                "" +
+                "\n\tdettagli:" + dettagli +
+                "\n" +
+                "\ttotaleOrdine='" + String.format("%.2f", totaleOrdine) + '\'' +
+                "\n\t" +
+                "\n\tdataFineLavori='" + dataFineLavori + '\'' +
+                ", \n\toraFineLavori='" + oraFineLavori + '\'' +
+                ", \n\tlavoroAlKm='" + lavoroAlKm + '\'' +
+//                ", \ncapitoloImpegnoCodice='" + capitoloImpegnoCodice + '\'' +
+//                ", \ncapitoloImpegnoAnno='" + capitoloImpegnoAnno + '\'' +
+//                ", \nnomeFile='" + nomeFile + '\'' +
+//                ", \nnumeroDocumento='" + numeroDocumento + '\'' +
+//                ", \ntotaleDocumento='" + totaleDocumento + '\'' +
+//                ", \nnumeroOrdine='" + numeroOrdine + '\'' +
+                "\n}";
     }
 }
