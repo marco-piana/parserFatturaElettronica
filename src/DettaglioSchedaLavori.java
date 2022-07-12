@@ -12,8 +12,9 @@ public class DettaglioSchedaLavori {
 
     @Override
     public String toString() {
-        return "\n\ttipologiaIntervento='" + tipologiaIntervento + '\'' +
-                ", \n\tnote='" + note + '\'' +
-                ", \n\timporoIntervento='" + getTotaleIntervento() + '\'';
+//        return "\n\ttipologiaIntervento='" + tipologiaIntervento + '\'' +
+//                ", \n\tnote='" + note + '\'' +
+//                ", \n\timporoIntervento='" + getTotaleIntervento() + '\'';
+        return note;
     }
 }

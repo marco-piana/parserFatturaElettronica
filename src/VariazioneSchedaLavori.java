@@ -34,11 +34,10 @@ public class VariazioneSchedaLavori {
                 ", \n\tdataInizioLavori='" + dataInizioLavori + '\'' +
                 ", \n\toraInizioLavori='" + oraInizioLavori + '\'' +
                 ", \n\tnote='" + note + '\'' +
-                "" +
                 "\n\tdettagli:" + dettagli +
                 "\n" +
                 "\ttotaleOrdine='" + String.format("%.2f", totaleOrdine) + '\'' +
-                "\n\t" +
+                "\n" +
                 "\n\tdataFineLavori='" + dataFineLavori + '\'' +
                 ", \n\toraFineLavori='" + oraFineLavori + '\'' +
                 ", \n\tlavoroAlKm='" + lavoroAlKm + '\'' +
