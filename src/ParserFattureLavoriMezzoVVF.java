@@ -35,9 +35,11 @@ public class ParserFattureLavoriMezzoVVF
         private VariazioneSchedaLavori variazioneCorrente = null;
         private float price;
 
+        public boolean isFirstVariazione = true;
+
         public static void main(String[] args) {
             boolean MULTIFILES = true;
-            String dirFattureXML = "Z:\\Autorimessa-fatture\\";
+            String dirFattureXML = "Z:\\Autorimessa-fatture\\2022\\";
 
             // Istanza del parser
             ParserFattureLavoriMezzoVVF parserVVF = new ParserFattureLavoriMezzoVVF();
@@ -53,10 +55,14 @@ public class ParserFattureLavoriMezzoVVF
 //            logger.info("--------------------------------------");
             if(MULTIFILES) {
                 for (int i = 0; i < files.length; i++) {
-//                    System.out.println("File " + files[i].getName());
+                    System.out.println("File " + files[i].getName());
+                    parserVVF.resetParser();
                     parserVVF.fileXML = files[i].getName();
                     try {
                         parserVVF.extractWorkFromBill(dirFattureXML + files[i].getName());
+                        if (parserVVF.isFirstVariazione && (parserVVF.variazioneCorrente != null)) {
+                            parserVVF.variazioniCorrenti.add(parserVVF.variazioneCorrente);
+                        }
                     } catch (XMLStreamException e) {
                         e.printStackTrace();
                     } catch (IOException e) {
@@ -88,6 +94,11 @@ public class ParserFattureLavoriMezzoVVF
 
             //TODO: scorrere ogni file xml delle fatture nella cartella
 
+        }
+
+        private void resetParser() {
+            this.variazioneCorrente = null;
+            this.targaCorrente = null;
         }
 
         /**
@@ -299,11 +310,11 @@ public class ParserFattureLavoriMezzoVVF
             dettaglio.ivaIntervento = this.ivaParzialePrezzoOrdine;
             variazioneCorrente.totaleOrdine = this.price;
             variazioneCorrente.dettagli.add(dettaglio);
-
         }
 
         private void createNewVariazione(String targa) {
             if (variazioneCorrente != null) {
+                this.isFirstVariazione = false;
                 variazioniCorrenti.add(variazioneCorrente);
                 this.price = 0;
             }
