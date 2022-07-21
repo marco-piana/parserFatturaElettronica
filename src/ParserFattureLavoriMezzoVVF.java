@@ -150,13 +150,14 @@ public class ParserFattureLavoriMezzoVVF
                                 break;
 
 
-
                             case "Denominazione":
                                 if(TAG_PRINCIPALE.equals("CedentePrestatore")) {
                                     this.cedente = xmlStreamReader.getElementText();
                                     logger.debug(TAG_PRINCIPALE + ": " + this.cedente);
                                 }
                                 break;
+
+
                             case "Descrizione":
                                 if(TAG_PRINCIPALE.equals("DettaglioLinee")) {
                                     String dettaglio = xmlStreamReader.getElementText();
@@ -206,8 +207,21 @@ public class ParserFattureLavoriMezzoVVF
 
                                     // Esclude alcune righe in base al loro contenuto
                                     if(isValidForPrice) {
+                                        System.out.println(testoTag + "\n");
                                         this.parzialePrezzoOrdine = testoTag;
                                         logger.debug(TAG_PRINCIPALE + ": " + this.parzialePrezzoOrdine);
+                                    }
+                                }
+                                break;
+                             case "RiferimentoTesto":
+                                if(TAG_PRINCIPALE.equals("DettaglioLinee")) {
+                                    String testoTag = xmlStreamReader.getElementText();
+
+                                    // Esclude alcune righe in base al loro contenuto
+                                    if(!testoTag.toLowerCase().contains("VOSTRO ORDINE".toLowerCase())) {
+                                        System.out.println("------------------" + testoTag);
+                                        this.variazioneCorrente.dettagli.get(this.variazioneCorrente.dettagli.size()-1).note += " " + testoTag;
+                                        logger.debug(TAG_PRINCIPALE + ": " + this.descrizioneOrdine);
                                     }
                                 }
                                 break;
@@ -223,6 +237,8 @@ public class ParserFattureLavoriMezzoVVF
                                     }
                                 }
                                 break;
+
+
                             case "IdDocumento":
                                 if(TAG_PRINCIPALE.equals("DatiOrdineAcquisto")) {
                                     this.numeroOrdine =  xmlStreamReader.getElementText();
@@ -250,6 +266,8 @@ public class ParserFattureLavoriMezzoVVF
                                     }
                                 }
                                 break;
+
+
                             case "ImportoTotaleDocumento":
                                 if(TAG_PRINCIPALE.equals("DatiGeneraliDocumento")) {
                                     this.totaleDocumento = xmlStreamReader.getElementText();
@@ -316,8 +334,10 @@ public class ParserFattureLavoriMezzoVVF
             if (variazioneCorrente != null) {
                 this.isFirstVariazione = false;
                 variazioniCorrenti.add(variazioneCorrente);
-                this.price = 0;
             }
+            this.parzialePrezzoOrdine = String.valueOf(0);
+            this.descrizioneOrdine = "";
+            this.price = 0;
             variazioneCorrente = new VariazioneSchedaLavori();
             variazioneCorrente.targa = targa;
             variazioneCorrente.nomeFile = fileXML;

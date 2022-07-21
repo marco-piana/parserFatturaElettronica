@@ -15,6 +15,7 @@ public class DettaglioSchedaLavori {
 //        return "\n\ttipologiaIntervento='" + tipologiaIntervento + '\'' +
 //                ", \n\tnote='" + note + '\'' +
 //                ", \n\timporoIntervento='" + getTotaleIntervento() + '\'';
+//        return note + "(" + this.getTotaleIntervento() + " euro)";
         return note;
     }
 }

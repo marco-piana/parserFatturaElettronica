@@ -37,6 +37,7 @@ public class VariazioneSchedaLavori {
                 "\n\tdettagli:" + dettagli +
                 "\n" +
                 "\ttotaleOrdine='" + String.format("%.2f", totaleOrdine) + '\'' +
+                "\ttotaleDettagli='" + String.format("%.2f", totaleOrdine) + '\'' +
                 "\n" +
                 "\n\tdataFineLavori='" + dataFineLavori + '\'' +
                 ", \n\toraFineLavori='" + oraFineLavori + '\'' +
@@ -48,5 +49,13 @@ public class VariazioneSchedaLavori {
 //                ", \ntotaleDocumento='" + totaleDocumento + '\'' +
 //                ", \nnumeroOrdine='" + numeroOrdine + '\'' +
                 "\n}";
+    }
+
+    public float getTotaleDettagli() {
+        float totale = 0;
+        for(DettaglioSchedaLavori d : this.dettagli) {
+            totale += Float.valueOf(d.getTotaleIntervento());
+        }
+        return totale;
     }
 }
