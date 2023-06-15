@@ -10,6 +10,8 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FilenameFilter;
 import java.io.IOException;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -39,7 +41,7 @@ public class ParserFattureLavoriMezzoVVF
 
         public static void main(String[] args) {
             boolean MULTIFILES = true;
-            String dirFattureXML = "Z:\\Autorimessa-fatture\\2022\\";
+            String dirFattureXML = "Z:\\Autorimessa-fatture\\2022\\Fortini\\";
 
             // Istanza del parser
             ParserFattureLavoriMezzoVVF parserVVF = new ParserFattureLavoriMezzoVVF();
@@ -63,6 +65,13 @@ public class ParserFattureLavoriMezzoVVF
                         if (parserVVF.isFirstVariazione && (parserVVF.variazioneCorrente != null)) {
                             parserVVF.variazioniCorrenti.add(parserVVF.variazioneCorrente);
                         }
+                        if (
+                                parserVVF.variazioneCorrente.tipoDocumento.equals("TD01") ||
+                                parserVVF.variazioneCorrente.tipoDocumento.equals("TD24")
+
+                        ) {
+                            System.out.println(parserVVF.variazioneCorrente.toString());
+                        }
                     } catch (XMLStreamException e) {
                         e.printStackTrace();
                     } catch (IOException e) {
@@ -70,15 +79,15 @@ public class ParserFattureLavoriMezzoVVF
                     }
 //                    logger.info("--------------------------------------");
                 }
-                for(VariazioneSchedaLavori v : parserVVF.variazioniCorrenti) {
-                    if (v.tipoDocumento.equals("TD01")) {
-                        System.out.println(v.toString());
-                    }
-                }
+//                for(VariazioneSchedaLavori v : parserVVF.variazioniCorrenti) {
+//                    if (v.tipoDocumento.equals("TD01")) {
+//                        System.out.println(v.toString());
+//                    }
+//                }
             }
             else {
-//                String FILENAME = dirFattureXML + "Elettr_Nanni_21_48_20_NC.xml";
-                String FILENAME = "C:\\Users\\davide.piana\\IdeaProjects\\parserFatturaElettronica\\src\\test.xml";
+                String FILENAME = dirFattureXML + "Carr_Elio_22_12_01_2022.xml";
+//                String FILENAME = "C:\\Users\\davide.piana\\IdeaProjects\\parserFatturaElettronica\\src\\test.xml";
                 System.out.println("File " + FILENAME);
                 parserVVF.fileXML = FILENAME;
                 try {
@@ -164,7 +173,8 @@ public class ParserFattureLavoriMezzoVVF
                                     String testoTag = "";
                                     if (dettaglio.contains("/D ") ||
                                        (dettaglio.contains("/M ")) ||
-                                       (dettaglio.contains("/DS "))
+                                       (dettaglio.contains("/DS ")) ||
+                                       (dettaglio.startsWith("S/R "))
                                     ) {
                                         testoTag = dettaglio.substring(3);
                                     }
@@ -178,6 +188,17 @@ public class ParserFattureLavoriMezzoVVF
                                         String fromTarga = testoTag.substring(position+2, testoTag.length()-1);
                                         testoTag = testoTag.replaceAll("\\( VF .+\\)", "");
                                         String targa = fromTarga.split("\\)")[0].replace(" ", "");
+                                        this.targaCorrente = targa;
+                                        logger.debug(TAG_PRINCIPALE + ": " + this.targaCorrente);
+                                        this.createNewVariazione(targa);
+
+                                    }
+                                    else if (testoTag.contains("TARGA: VF ")) {
+                                        int position = testoTag.indexOf("TARGA: VF ");
+                                        String fromTarga = testoTag.substring(position, "TARGA: VF ".length()+5);
+                                        testoTag = testoTag.substring("TARGA: VF ".length()+5, testoTag.length());
+                                        String targa = fromTarga.substring(fromTarga.length()-5);
+
                                         this.targaCorrente = targa;
                                         logger.debug(TAG_PRINCIPALE + ": " + this.targaCorrente);
                                         this.createNewVariazione(targa);
@@ -219,7 +240,7 @@ public class ParserFattureLavoriMezzoVVF
 
                                     // Esclude alcune righe in base al loro contenuto
                                     if(!testoTag.toLowerCase().contains("VOSTRO ORDINE".toLowerCase())) {
-                                        System.out.println("------------------" + testoTag);
+//                                        System.out.println("------------------" + testoTag);
                                         this.variazioneCorrente.dettagli.get(this.variazioneCorrente.dettagli.size()-1).note += " " + testoTag;
                                         logger.debug(TAG_PRINCIPALE + ": " + this.descrizioneOrdine);
                                     }
@@ -248,10 +269,14 @@ public class ParserFattureLavoriMezzoVVF
                             case "Data": // Oppure NumItem
                                 if(TAG_PRINCIPALE.equals("DatiOrdineAcquisto")) {
                                     this.dataOrdine = xmlStreamReader.getElementText();
+                                    LocalDate d = LocalDate.parse(this.dataOrdine);
+                                    this.dataOrdine = d.format(DateTimeFormatter.ofPattern("dd/MM/YYYY")).toString();
                                     logger.debug(TAG_PRINCIPALE + ": " + this.dataOrdine);
                                 }
                                 else if (TAG_PRINCIPALE.equals("DatiGeneraliDocumento")) {
                                     this.dataDocumento = xmlStreamReader.getElementText();
+                                    LocalDate d = LocalDate.parse(this.dataDocumento);
+                                    this.dataDocumento = d.format(DateTimeFormatter.ofPattern("dd/MM/YYYY")).toString();
                                     logger.debug(TAG_PRINCIPALE + ": " + this.dataDocumento);
                                 }
                                 break;
@@ -262,6 +287,8 @@ public class ParserFattureLavoriMezzoVVF
                                     if (matcher.find())
                                     {
                                         this.dataOrdine = matcher.group();
+                                        LocalDate d = LocalDate.parse(this.dataOrdine);
+                                        this.dataOrdine = d.format(DateTimeFormatter.ofPattern("dd/MM/YYYY")).toString();
                                         logger.debug(TAG_PRINCIPALE + ": " + this.dataOrdine);
                                     }
                                 }
